@@ -1,0 +1,5 @@
+### These packages are necessary to run our code ###
+configparser
+pandas
+nltk
+collections
