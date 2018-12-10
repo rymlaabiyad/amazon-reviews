@@ -1,19 +1,16 @@
-import configparser
 import pandas as pd
 
-def retrieveData():
-    config = configparser.ConfigParser()
-    config.read('init.cfg')
-    path = config['RESOURCES']['path']
-    dataFile = config['RESOURCES']['dataFile']
 
-    df = pd.read_json(path + dataFile, lines=True)
+### Arguments : 
+#   - path : The path of the file containing our data
+### Output : 
+#   - df : the dataframe corresponding to our data file
+#   - reviews : An array containing all the reviews
+def retrieveData(path):
+    df = pd.read_json(path, lines=True)
 
-    totalReviews = " "
+    reviews = []
     for review in df['reviewText'].items():
-        totalReviews = totalReviews + review[1] + "\n"
-    freviews = open(path + 'reviews.txt', 'w')
-    freviews.write(totalReviews[1:-1])
-    freviews.close()
+        reviews.append(review[1])
 
-    return (df, totalReviews)
+    return (df, reviews)

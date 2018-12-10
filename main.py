@@ -1,22 +1,34 @@
 from data_retriever import retrieveData
-from feature_extraction import *
-from split_data import *
-df, reviews = retrieveData()
+from feature_extraction import extract, filter
 
-cmn_nn,cmn_adj = extract(reviews)
+from configparser import ConfigParser
+from sklearn.feature_extraction.text import CountVectorizer
+import pandas as pd
 
-train,test=get_test_train(df=df)
-print('Training DataSet Shape:',train.shape)
-print('Test DataSet Shape:',test.shape)
-print(cmn_nn)
-print(cmn_adj)
-train=get_cmn_nlp_features(df=train,cmn_nn=cmn_nn,cmn_adj=cmn_adj)
-#print(train['tokenized_sents'].head())
 
-config = configparser.ConfigParser()
+config = ConfigParser()
 config.read('init.cfg')
 path = config['RESOURCES']['path']
-#df = pd.read_csv(path+'reviews.csv')
+dataFile = config['RESOURCES']['dataFile']
 
-train.to_csv(path+'train.csv')
-test.to_csv(path+'test.csv')
+# We retrieve a dataframe corresponding to our data file
+# and an array containing only the reviews
+df, reviews = retrieveData(path + dataFile)
+
+# We call the extract method to retrieve the most relevant words (features)
+features = extract(reviews)  
+# For each review, we only keep the words that are features
+filtered_tokens = [filter(review, features) for review in reviews]
+filtered_reviews = []
+for f in filtered_tokens:
+    review = ""
+    for t in f:
+        review = review + t + " "
+    filtered_reviews.append(review)
+
+# We create a column for each feature
+# If that feature is mentioned in the review : the value is 1, else 0
+cv = CountVectorizer(binary=True)
+x = cv.fit_transform(filtered_reviews)
+df_features = pd.DataFrame(x.toarray(), columns=features)
+print(df_features.info())

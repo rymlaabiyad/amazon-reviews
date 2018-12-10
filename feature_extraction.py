@@ -16,18 +16,25 @@ from nltk.util import ngrams
 
 from collections import Counter
 
+
+### Arguments : 
+#   - reviews : An array containing all the reviews
+### Output : The most interesting tokens in the reviews 
 def extract(reviews):
+    totalReviews = " "
+    for review in reviews:
+        totalReviews = totalReviews + review + "\n"
+        
     # Retrieve the 300 most common relevent words 
-    token_count = tokenize(reviews, 300)
-    tokens = []
-    for token in token_count:
-        tokens.append(token[0])
+    token_count = tokenize(totalReviews, 300)
+    tokens = [t[0] for t in token_count]
         
     # Retrieve the nouns out of the 300 most common words
     nouns = tag(tokens, 'NN')
     print('nouns : ', nouns[0:30])
-    adjectives=tag(tokens,'JJ')
-    return nouns[0:30], adjectives[0:20]
+    #adjectives=tag(tokens,'JJ')
+    #return nouns[0:30], adjectives[0:20]
+    return nouns[0:30]
     
     
 ### Arguments : 
@@ -71,6 +78,15 @@ def stem(tokens):
     ps = nltk.PorterStemmer()
     return [ps.stem(t) for t in tokens]
 
+
+def filter(review, features):
+    tokens = [t[0] for t in tokenize(review)]
+    filtered_tokens = [t for t in tokens if t in features]
+    return filtered_tokens
+
+
+###############################################################################
+    
 def get_filter_token(text,common):
     txt_tk=nltk.tokenize.word_tokenize(text, language='english')
     stop_words = nltk.corpus.stopwords.words("english")
