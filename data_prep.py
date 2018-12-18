@@ -22,19 +22,20 @@ def prepareData(ratings, reviews):
     # If that feature is mentioned in the review : the value is 1, else 0
     cv = CountVectorizer(binary=True)
     x = cv.fit_transform(filtered_reviews)
-    
+
     x_df = pd.DataFrame(x.toarray(), columns=cv.get_feature_names())
-    
+
     # To simplify our classification, we make sure that high ratings are considered positive (1),
     # while low ones are considered negative (0)
     ratings = transform_rating(ratings)
-            
+
     return ratings, x_df
+
 
 def transform_rating(ratings):
     # First, we normalize the data
     ratings = preprocessing.scale(ratings)
-    #Then we only keep positive (1) and negative (0) ratings, to simplify classification
+    # Then we only keep positive (1) and negative (0) ratings, to simplify classification
     mean = ratings.mean()
     transformed_ratings = np.zeros(ratings.shape[0])
     for i in range(ratings.shape[0]):
