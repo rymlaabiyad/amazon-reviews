@@ -2,4 +2,5 @@
 configparser
 pandas
 nltk
+treeinterpreter
 collections
